@@ -1,6 +1,5 @@
-import { mongoose } from "../../infra/datasource/datasource";
+import { mongoose } from "../datasource/datasource";
 import bcrypt from "bcryptjs"
-import { Schema } from "mongoose";
 
 const UserSchema =
     new mongoose.Schema({
@@ -19,6 +18,10 @@ const UserSchema =
             required: true,
             select: false
         },
+        role:{
+            type: String,
+            required: true
+        },
         company: {
             type: String,
             required: true
@@ -26,6 +29,10 @@ const UserSchema =
         createdAt: {
             type: Date,
             default: Date.now
+        },
+        deletedAt: {
+            type: Date,
+            default: null
         }
     })
 
