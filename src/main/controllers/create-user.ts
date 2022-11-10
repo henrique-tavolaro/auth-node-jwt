@@ -1,60 +1,63 @@
-import { Request, Response } from "express";
-import { BadRequestError } from "../../domain/errors/bad-request";
-import { IController } from "../../domain/interfaces/icontroller"
+import { NextFunction, Request, Response } from "express";
+import { ApiErrors } from "../../domain/errors/api-errors";
+import { IController } from "../../domain/interfaces/icontroller";
 import { IRepository } from "../../domain/repositories/i-repository";
-import { User } from "../../infra/schema-models/user";
-import { generateToken } from "../../utils/generate-token";
 
 export class CreateUserController implements IController {
     constructor(
         private repository: IRepository
     ) { }
 
-    async handle(request: Request, response: Response): Promise<Response | undefined> {
+    async handle(request: Request, response: Response, next: NextFunction): Promise<Response | undefined> {
         try {
 
             const { name, email, password, company, role } = request.body;
 
+            if(request.app.locals.role != 'admin' ){
+                throw ApiErrors.unauthorizedError(
+                    "User don't have admin rights"
+                )
+            }
+
             if (name == null || name == undefined) {
-                throw new BadRequestError(
+                throw ApiErrors.badRequest(
                     `Empty field name`
                 )
             }
 
             if (email == null || email == undefined) {
-                throw new BadRequestError(
+                throw ApiErrors.badRequest(
                     `Empty field email`
                 )
             }
 
             if (password == null || password == undefined) {
-                throw new BadRequestError(
+                throw ApiErrors.badRequest(
                     `Empty field password`
                 )
             }
 
             if (company == null || company == undefined) {
-                throw new BadRequestError(
+                throw ApiErrors.badRequest(
                     `Empty field company`
                 )
             }
-
             
             if (role == null || role == undefined) {
-                throw new BadRequestError(
+                throw ApiErrors.badRequest(
                     `Empty field role`
                 )
             }
 
-            const user = await this.repository.createUser(request.body);
+            await this.repository.createUser(request.body);
 
             return response.status(201).json({
-                message: "User created successfully",
-                token: generateToken({id: user!.id})
+                message: "User created successfully"
             })
 
         } catch (error) {
             console.log('Error in controller create user', error);
+            next(error)
         }
     }
 }

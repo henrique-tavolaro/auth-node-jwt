@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiErrors } from "../../domain/errors/api-errors";
-import { BadRequestError } from "../../domain/errors/bad-request";
 import { IController } from "../../domain/interfaces/icontroller"
 import { IRepository } from "../../domain/repositories/i-repository";
 import { generateToken } from "../../utils/generate-token";
 
-export class LoginUserController {
+export class LoginUserController implements IController {
 
     constructor(
         private repository: IRepository
@@ -31,10 +30,11 @@ export class LoginUserController {
 
             const user = await this.repository.loginUser(email, password);
 
-       
-            
             return response.status(201).json({
-                user
+                user,
+                token: generateToken({
+                    id: user!.id,
+                    role: user!.get('role')})
             })
         } catch (error) {
             console.log('Error in controller login user', error);

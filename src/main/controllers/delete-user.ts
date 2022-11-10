@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { BadRequestError } from "../../domain/errors/bad-request";
+import { NextFunction, Request, Response } from "express";
+import { ApiErrors } from "../../domain/errors/api-errors";
 import { IController } from "../../domain/interfaces/icontroller";
 import { IRepository } from "../../domain/repositories/i-repository";
 
@@ -8,12 +8,18 @@ export class DeleteUserController implements IController {
         private repository: IRepository
     ) { }
 
-    async handle(request: Request, response: Response): Promise<Response | undefined> {
+    async handle(request: Request, response: Response, next: NextFunction): Promise<Response | undefined> {
         try {
             const _id = request.body;
 
+            if(request.app.locals.role != 'admin' ){
+                throw ApiErrors.unauthorizedError(
+                    "User don't have admin rights"
+                )
+            }
+
             if (_id == null || _id == undefined) {
-                throw new BadRequestError(
+                throw ApiErrors.badRequest(
                     `No user id provided`
                 )
             }
@@ -24,6 +30,7 @@ export class DeleteUserController implements IController {
 
         } catch (error) {
             console.log('Error in controller delete user', error);
+            next(error);
         }
     }
 }

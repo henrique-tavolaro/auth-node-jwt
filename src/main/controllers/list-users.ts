@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { IController } from "../../domain/interfaces/icontroller";
 import { IRepository } from "../../domain/repositories/i-repository";
 
@@ -8,7 +8,7 @@ export class ListUsersController implements IController {
         private repository: IRepository
     ) { }
     
-    async handle(request: Request, response: Response): Promise<Response | undefined> {
+    async handle(request: Request, response: Response, next: NextFunction) : Promise<Response | undefined> {
         try {
 
             const result = await this.repository.listUsers();
@@ -17,6 +17,7 @@ export class ListUsersController implements IController {
 
         } catch (error) {
             console.log('Error in controller list users', error);
+            next(error);
         }
     
     }

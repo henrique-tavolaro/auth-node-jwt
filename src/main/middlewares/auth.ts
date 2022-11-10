@@ -34,7 +34,9 @@ export function auth(req: Request, res: Response, next: NextFunction) {
                 error: 'Token malformatted'
             });
         }
+        
         req.app.locals.userId = decoded.id
+        req.app.locals.role = decoded.params.role
         return next();
     })
 

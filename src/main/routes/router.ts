@@ -8,57 +8,48 @@ import { makeDeleteCompanyController } from "../factories/make-delete-company";
 import { makeListCompaniesController } from "../factories/make-list-companies";
 import { makeListUsersController } from "../factories/make-list-users";
 import { makeLoginUserController } from "../factories/make-login-user";
-import errorMiddleware from "../middlewares/error-middleware";
 
 export const router = Router();
 
 router.post('/newuser',
     schemaValidation,
     validate,
-    async (request: Request, response: Response) => {
-        await makeCreateUserController().handle(request, response)
+    async (request: Request, response: Response, next: NextFunction) => {
+        await makeCreateUserController().handle(request, response, next)
     });
 
 router.delete('/user',
-    async (request: Request, response: Response) => {
-        await makeDeleteUserController().handle(request, response)
+    async (request: Request, response: Response, next: NextFunction) => {
+        await makeDeleteUserController().handle(request, response, next)
     })
 
 router.get('/users',
-    async (request: Request, response: Response) => {
-        await makeListUsersController().handle(request, response)
-    })
-
-router.post('/login',
-    schemaValidation,
-    validate,
     async (request: Request, response: Response, next: NextFunction) => {
-       return await makeLoginUserController().handle(request, response, next);
-    });
+        await makeListUsersController().handle(request, response, next)
+    })
 
 //todo
 router.post('/reset-password',
-    async (request: Request, response: Response) => {
-        await makeCreateUserController().handle(request, response)
+    async (request: Request, response: Response, next: NextFunction) => {
+        await makeCreateUserController().handle(request, response, next)
     })
 
 router.post('/newcompany',
-    async (request: Request, response: Response) => {
-        await makeCreateCompanyController().handle(request, response);
+    async (request: Request, response: Response, next: NextFunction) => {
+        await makeCreateCompanyController().handle(request, response, next);
     })
 
 router.get('/companies',
-    async (request: Request, response: Response) => {
-        await makeListCompaniesController().handle(request, response)
+    async (request: Request, response: Response, next: NextFunction) => {
+        await makeListCompaniesController().handle(request, response, next)
     })
 
 router.delete('/company',
-    async (request: Request, response: Response) => {
-        await makeDeleteCompanyController().handle(request, response)
+    async (request: Request, response: Response, next: NextFunction) => {
+        await makeDeleteCompanyController().handle(request, response, next)
     })
 
 router.get('/dashboard',
-    auth,
-    async (request: Request, response: Response) => {
+    async (request: Request, response: Response, next: NextFunction) => {
         await response.json({ message: 'ok' })
     })

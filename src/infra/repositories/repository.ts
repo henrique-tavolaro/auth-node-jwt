@@ -36,6 +36,8 @@ export class Repository implements IRepository {
 
             const newUser = await User.create(user);
 
+            console.log(`NEW USER ${newUser}`)
+
             if (!newUser) {
                 throw ApiErrors.serverError('Error creating user')
             }
@@ -133,4 +135,9 @@ export class Repository implements IRepository {
             throw err;
         }
     }
+}
+
+interface ILoginUserParams {
+    email: string;
+    password: string;
 }
